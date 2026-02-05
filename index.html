@@ -82,14 +82,6 @@
         transition: 1s ease;
     }
 
-    .stem {
-        width: 6px;
-        height: 120px;
-        background: green;
-        margin: -20px auto 0;
-        border-radius: 5px;
-    }
-
     /* Modal */
     .modal {
         position: fixed;
@@ -121,9 +113,107 @@
         transition: transform 0.3s ease;
     }
 
+    .photo-gallery {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    flex-wrap: wrap;
+    margin-top: 15px;
+    }
+
+    .photo-gallery img {
+        width: 150px;
+        height: 150px;
+        object-fit: cover;
+        border-radius: 15px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        transition: 0.3s;
+    }
+
+    .photo-gallery img:hover {
+        transform: scale(1.1);
+    }
+
+    .bouquet {
+        font-size: 2rem;
+        margin-top: 15px;
+    }
+
+    .side-rose {
+        position: fixed;
+        animation: floatRose linear infinite;
+        pointer-events: none;
+    }
+
+    @keyframes floatRose {
+        from { transform: translateY(0); opacity: 1; }
+        to { transform: translateY(-120vh); opacity: 0; }
+    }
+
+    #heartContainer {
+        position: fixed;
+        width: 500px;
+        height: 500px;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        pointer-events: none;
+        z-index: 5;
+    }
+
+
+    .heart-rose {
+        position: absolute;
+        font-size: 24px;
+        animation: spinRose 4s linear infinite, pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes spinRose {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+    }
+
+    @keyframes pulse {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.3); }
+    }
+    .bouquet-pop {
+        position: fixed;
+        font-size: 30px;
+        animation: fallBouquet 6s linear forwards;
+        pointer-events: none;
+        z-index: 999;
+    }
+
+    @keyframes fallBouquet {
+        0% { transform: translateY(-100px) rotate(0deg); opacity: 1; }
+        100% { transform: translateY(110vh) rotate(360deg); opacity: 0; }
+    }
+
+    .heart-note {
+        position: absolute;
+        width: 220px;
+        text-align: center;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 16px;
+        color: white;
+        text-shadow: 0 0 8px rgba(0,0,0,0.5);
+        animation: fadeIn 2s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translate(-50%, -40%); }
+        to { opacity: 1; transform: translate(-50%, -50%); }
+    }
+
+
+
 
 </style>
 </head>
+
 <body>
 
 <div class="modal" id="valentineModal">
@@ -138,80 +228,143 @@
 
 </div>
 
-<div class="container">
-    <h1> Our Valentine Countdown 🌹</h1>
-    <div id="countdown"></div>
+<!-- 💖 Hidden Love Content -->
 
-    <div class="rose">
-        <div class="petal" id="p1"></div>
-        <div class="petal" id="p2"></div>
-        <div class="petal" id="p3"></div>
-        <div class="petal" id="p4"></div>
-        <div class="center" id="center"></div>
+<div id="heartContainer" style="display:none;"></div>
+    <div id="loveContent" style="display:none; margin-top:30px;">
+
+        <h2> 💖 A special note will pop up for my lady🌹 in every Valentines day 💖</h2>
+
+        <div id="roseCountdown" style="font-size:1.4rem; margin-bottom:20px;"></div>
+
+        <div class="bouquet">💐🌹💐🌹💐</div>
+
     </div>
+<div class="container">
+    <div id="countdown"></div>
+    <div class="rose" style="display:none;">
+        <div class="petal" id="p1" style="display:none;"></div>
+        <div class="petal" id="p2" style="display:none;"></div>
+        <div class="petal" id="p3" style="display:none;" ></div>
+        <div class="petal" id="p4" style="display:none;" ></div>
+        <div class="center" id="center" style="display:none;" ></div>
+    </div>
+
     <div class="stem"></div>
 
     <div id="note"></div>
 </div>
 
 <script>
-const roseDay = new Date("Feb 7, 2026 00:00:00").getTime();
-const valentinesDay = new Date("Feb 14, 2026 00:00:00").getTime();
-const today = new Date().getTime();
 
-// 💌 Notes for each day
-const notes = [
-    "Every love story is beautiful, but ours will be my favorite.",
-    "You make my world brighter just by being in it.",
-    "I didn’t choose you. My heart did.",
-    "With you, every moment feels special.",
-    "You are my today and all of my tomorrows.",
-    "Loving you is my favorite thing to do.",
-    "Happy Valentine’s Day to the one who owns my heart 💖 "
+const loveWeek = [
+    { name: "Rose Day 🌹", date: new Date("Feb 7, 2026 00:00:00"), icon: "🌹", note: "A rose for the most beautiful person in my life." },
+    { name: "Propose Day 💍", date: new Date("Feb 8, 2026 00:00:00"), icon: "💍", note: "I choose you today, tomorrow, and forever. Will you be mine?" },
+    { name: "Chocolate Day 🍫", date: new Date("Feb 9, 2026 00:00:00"), icon: "🍫", note: "Life is sweeter with you, just like chocolate." },
+    { name: "Teddy Day 🧸", date: new Date("Feb 10, 2026 00:00:00"), icon: "🧸", note: "Here’s a teddy hug to remind you I’m always here." },
+    { name: "Promise Day 🤝", date: new Date("Feb 11, 2026 00:00:00"), icon: "🤝", note: "I promise to stand by you, always and forever." },
+    { name: "Hug Day 🤗", date: new Date("Feb 12, 2026 00:00:00"), icon: "🤗", note: "Sending you the warmest hug full of love." },
+    { name: "Kiss Day 💋", date: new Date("Feb 13, 2026 00:00:00"), icon: "💋", note: "A kiss filled with all my love for you." },
+    { name: "Valentine’s Day ❤️", date: new Date("Feb 14, 2026 00:00:00"), icon: "❤️", note: "Happy Valentine’s Day to the love of my life." }
 ];
-
-// 🌹 Bloom rose depending on days passed
-function bloomRose(daysPassed) {
-    const petals = [p1, p2, p3, p4];
-    for (let i = 0; i < petals.length; i++) {
-        if (daysPassed > i) {
-            petals[i].style.opacity = "1";
-            petals[i].style.transform = `rotate(${i*60}deg) translateY(-20px)`;
-        }
-    }
-    if (daysPassed > 4) center.style.opacity = "1";
-}
 
 // 💖 Accept modal
 function acceptLove() {
+    
     document.getElementById("valentineModal").style.display = "none";
+
+    // Show hidden love content
+    document.getElementById("loveContent").style.display = "block";
+    // startRoseCountdown();
+    createSideRoses();
+    createHeartRoses();
+    startLoveDayCountdown();  // dynamic countdown
+    showHeartMessage(); 
 }
 
-// ⏳ Countdown to Rose Day
-setInterval(() => {
-    const now = new Date().getTime();
-    const distance = roseDay - now;
+function startLoveDayCountdown() {
+    const now = new Date();
 
-    if (distance > 0) {
-        const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-        const hours = Math.floor((distance % (1000*60*60*24)) / (1000*60*60));
-        document.getElementById("countdown").innerHTML =
-            `🌹 Rose Day in ${days}d ${hours}h`;
-    } else {
-        document.getElementById("countdown").innerHTML = "🌹 Happy Rose Day!";
+    let nextDay = loveWeek.find(day => now < day.date);
+
+    if (!nextDay) {
+        document.getElementById("roseCountdown").innerHTML = "💖 Every day with you is special!";
+        return;
     }
-}, 1000);
 
-// 💌 Show note based on day (Feb 7–14)
-const dayIndex = Math.floor((today - roseDay) / (1000 * 60 * 60 * 24));
-if (dayIndex >= 0 && dayIndex < notes.length) {
-    document.getElementById("note").innerHTML = notes[dayIndex];
-    bloomRose(dayIndex + 1);
-} else if (today < roseDay) {
-    document.getElementById("note").innerHTML = "A special note will bloom on Rose Day 🌹 my love 💖";
+    setInterval(() => {
+        const current = new Date();
+        const distance = nextDay.date - current;
+
+        const hours = Math.floor((distance % (1000*60*60*24)) / (1000*60*60));
+        const mins = Math.floor((distance % (1000*60*60)) / (1000*60));
+
+        document.getElementById("roseCountdown").innerHTML =
+            `${nextDay.name} in ${hours}h ${mins}m 💖`;
+    }, 1000);
 }
+
+function showHeartMessage() {
+    const now = new Date();
+    const todayEvent = loveWeek.find(day =>
+        now.toDateString() === day.date.toDateString()
+    );
+
+    if (!todayEvent) return;
+
+    const container = document.getElementById("heartContainer");
+
+    const msg = document.createElement("div");
+    msg.className = "heart-note";
+    msg.innerHTML = `<div style="font-size:30px">${todayEvent.icon}</div>${todayEvent.note}`;
+
+    container.appendChild(msg);
+}
+
 
 let noClickCount = 0;
+
+function createSideRoses() {
+    for (let i = 0; i < 25; i++) {
+        let rose = document.createElement("div");
+        rose.innerHTML = "🌹";
+        rose.className = "side-rose";
+        rose.style.left = Math.random() < 0.5 ? "5px" : "calc(100% - 30px)";
+        rose.style.top = Math.random() * 100 + "vh";
+        rose.style.fontSize = (16 + Math.random() * 20) + "px";
+        rose.style.animationDuration = (4 + Math.random() * 6) + "s";
+        document.body.appendChild(rose);
+    }
+}
+
+function createHeartRoses() {
+    const container = document.getElementById("heartContainer");
+    container.innerHTML = "";
+    container.style.display = "block";
+
+    const flowers = ["🌹"];
+    const total = 140;
+
+    for (let i = 0; i < total; i++) {
+        const t = Math.PI * 2 * (i / total);
+
+        const x = 16 * Math.pow(Math.sin(t), 3);
+        const y = -(13 * Math.cos(t) - 5 * Math.cos(2*t) - 2 * Math.cos(3*t) - Math.cos(4*t));
+
+        const flower = document.createElement("div");
+        flower.className = "heart-rose";
+        flower.innerHTML = flowers[Math.floor(Math.random() * flowers.length)];
+
+        flower.style.left = (250 + x * 14) + "px";
+        flower.style.top = (250 + y * 14) + "px";
+        flower.style.fontSize = (18 + Math.random() * 10) + "px";
+
+        container.appendChild(flower);
+    }
+}
+
+
+
 
 function rejectLove() {
     noClickCount++;
